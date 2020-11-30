@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PagedReportResponse.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DPPR API</a> &gt; <a href="index.source.html" class="el_package">asia.corelogic.dppr.domain.model.response</a> &gt; <span class="el_source">PagedReportResponse.java</span></div><h1>PagedReportResponse.java</h1><pre class="source lang-java linenums">package asia.corelogic.dppr.domain.model.response;
+
+import asia.corelogic.dppr.entity.ReportEntity;
+import lombok.Builder;
+import lombok.Data;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+
+import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Builder
+@Data
+public class PagedReportResponse {
+
+    private Content content;
+
+    @Data
+    @Builder
+    public static class Content {
+        private List&lt;FlattenedReportResponse&gt; reportList;
+        private long totalElements;
+        private int totalPages;
+        private boolean last;
+        private int number;
+        private Sort sort;
+        private int size;
+        private int numberOfElements;
+        private boolean first;
+        private boolean empty;
+    }
+
+    public static PagedReportResponse createPagedReport(Page&lt;ReportEntity&gt; pagedReport, String domain) {
+<span class="fc" id="L35">        return PagedReportResponse.builder().content(</span>
+<span class="fc" id="L36">            Content.builder()</span>
+<span class="fc" id="L37">                .reportList(pagedReport.getContent().stream()</span>
+<span class="fc" id="L38">                        .map(report -&gt; PagedReportResponse.mapReportEntityToResponse(report, domain))</span>
+<span class="fc" id="L39">                        .collect(Collectors.toList())</span>
+                )
+<span class="fc" id="L41">                .totalElements(pagedReport.getTotalElements())</span>
+<span class="fc" id="L42">                .totalPages(pagedReport.getTotalPages())</span>
+<span class="fc" id="L43">                .last(pagedReport.isLast())</span>
+<span class="fc" id="L44">                .number(pagedReport.getNumber())</span>
+<span class="fc" id="L45">                .sort(pagedReport.getSort())</span>
+<span class="fc" id="L46">                .size(pagedReport.getSize())</span>
+<span class="fc" id="L47">                .numberOfElements(pagedReport.getNumberOfElements())</span>
+<span class="fc" id="L48">                .first(pagedReport.isFirst())</span>
+<span class="fc" id="L49">                .empty(pagedReport.isEmpty())</span>
+<span class="fc" id="L50">                .build()</span>
+<span class="fc" id="L51">        ).build();</span>
+    }
+
+    private static FlattenedReportResponse mapReportEntityToResponse(@NotNull ReportEntity report, String domain) {
+<span class="fc" id="L55">        return FlattenedReportResponse.builder()</span>
+<span class="fc" id="L56">                .reportId(report.getReportId())</span>
+<span class="fc" id="L57">                .preferenceId(report.getPreferenceId())</span>
+<span class="fc" id="L58">                .integratorId(report.getIntegratorId())</span>
+<span class="fc" id="L59">                .countryCode(report.getCountryCode())</span>
+<span class="fc" id="L60">                .integratorUserId(report.getIntegratorUserId())</span>
+<span class="fc" id="L61">                .integratorFullName(report.getIntegratorFullName())</span>
+<span class="fc" id="L62">                .integratorEmail(report.getIntegratorEmail())</span>
+<span class="fc" id="L63">                .integratorPhone(report.getIntegratorPhone())</span>
+<span class="fc" id="L64">                .recipientFullName(report.getRecipientFullName())</span>
+<span class="fc" id="L65">                .propertyId(report.getPropertyId())</span>
+<span class="fc" id="L66">                .propertyAddress(report.getPropertyAddress())</span>
+<span class="fc" id="L67">                .reportLink(report.getReportLink())</span>
+<span class="fc" id="L68">                .reportLink(String.format(&quot;%s/%s&quot;, domain, report.getReportLink()))</span>
+<span class="fc" id="L69">                .orderedDate(report.getCreatedAt().toLocalDate())</span>
+<span class="fc" id="L70">                .expirationDate(report.getExpirationDate().toLocalDate())</span>
+<span class="fc" id="L71">                .build();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -e
+
+export server_port=8082
+export TEST_APPLICATION_URI_PORT=8082
+
+# Find existing app on port and kill if exists
+
+# Check if we are on windows
+if [ "$OSTYPE" == "msys" ]; then
+
+    # Need to be running bash as administrator
+    APP_PID=$(netstat -a -o -b -p TCP | grep -B 1 java.exe | grep :$server_port | awk '{print $NF}')
+    if [ -n "$APP_PID" ]; then
+       taskkill //PID $APP_PID //F
+    fi
+else
+    APP_PID=$(lsof -n -i4TCP:$server_port | grep LISTEN | sed 's/java *\([^ ]*\).*/\1/g')
+    if [ -n "$APP_PID" ]; then
+        kill $APP_PID
+    fi
+fi

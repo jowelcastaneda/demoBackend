@@ -1,0 +1,25 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/dppr
+    username: dppr-user
+
+acm:
+  oauth:
+    uri: https://api-uat.corelogic.asia/access
+    public:
+      key: auth-public-uat
+    client:
+      key: ovF0WOfSUbVr8wNIpNkn61OiuE38gKsZ
+      secret: ${secrets.oauth.clientSecret}
+
+# Digital Property Profiler Report config
+domain:
+  uri: http://localhost:3000
+
+redirectUri:
+  uri: http://localhost:3000/
+  au: http://localhost:3000/
+  nz: http://localhost:3000/

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PreferenceService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DPPR API</a> &gt; <a href="index.source.html" class="el_package">asia.corelogic.dppr.service</a> &gt; <span class="el_source">PreferenceService.java</span></div><h1>PreferenceService.java</h1><pre class="source lang-java linenums">package asia.corelogic.dppr.service;
+
+import asia.corelogic.dppr.entity.ReportSectionEntity;
+import asia.corelogic.dppr.exception.InvalidReportSectionFieldTypeException;
+import asia.corelogic.dppr.domain.model.converter.request.PreferenceModelConverter;
+import asia.corelogic.dppr.domain.model.converter.request.PreferenceReportSectionModelConverter;
+import asia.corelogic.dppr.domain.model.converter.response.PreferenceResponseModelConverter;
+import asia.corelogic.dppr.domain.model.request.Preference;
+import asia.corelogic.dppr.domain.model.response.PreferenceResponse;
+import asia.corelogic.dppr.repository.PreferenceReportSectionRepository;
+import asia.corelogic.dppr.repository.PreferenceRepository;
+import asia.corelogic.dppr.repository.ReportSectionRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.springframework.stereotype.Service;
+
+import java.math.BigInteger;
+
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
+
+
+@Service
+<span class="fc" id="L25">@Slf4j</span>
+@RequiredArgsConstructor
+public class PreferenceService {
+
+    private final PreferenceRepository preferenceRepository;
+
+    private final PreferenceReportSectionRepository preferenceReportSectionRepository;
+
+    private final ReportSectionRepository reportSectionRepository;
+
+    public PreferenceResponse savePreferences(Preference preference) {
+<span class="nc" id="L36">        validateReportSectionIds(preference);</span>
+
+        // would be replaced by image uploader service
+<span class="nc" id="L39">        val fakeLogoUrl = &quot;https://example.com/image.jpg&quot;;</span>
+<span class="nc" id="L40">        val preferenceEntity = preferenceRepository.save(</span>
+<span class="nc" id="L41">            PreferenceModelConverter.create().createFromDtoWithHeaderLogoUrl(preference, fakeLogoUrl)</span>
+        );
+
+<span class="nc" id="L44">        val reportSectionConverter = PreferenceReportSectionModelConverter.create();</span>
+<span class="nc" id="L45">        val preferenceReportSectionEntities = preferenceReportSectionRepository</span>
+<span class="nc" id="L46">            .saveAll(reportSectionConverter.createFromDTOsWithPreferenceId(</span>
+<span class="nc" id="L47">                preference.getPreferenceReportSections(), preferenceEntity.getPreferenceId()));</span>
+
+<span class="nc" id="L49">        return PreferenceResponseModelConverter.create().createFromEntityWithReportSections(</span>
+<span class="nc" id="L50">            preferenceEntity, reportSectionConverter.createFromEntities(preferenceReportSectionEntities));</span>
+    }
+
+    private void validateReportSectionIds(Preference preference) {
+<span class="nc" id="L54">        val reportSectionIds = preference.getPreferenceReportSections()</span>
+<span class="nc" id="L55">            .stream()</span>
+<span class="nc" id="L56">            .map(Preference.PreferenceReportSection::getReportSectionId)</span>
+<span class="nc" id="L57">            .collect(toUnmodifiableList());</span>
+
+<span class="nc" id="L59">        val validReportSectionIds = reportSectionRepository.findAllById(reportSectionIds)</span>
+<span class="nc" id="L60">            .stream()</span>
+<span class="nc" id="L61">            .map(ReportSectionEntity::getReportSectionId)</span>
+<span class="nc" id="L62">            .collect(toUnmodifiableList());</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        if (validReportSectionIds.size() != preference.getPreferenceReportSections().size()) {</span>
+<span class="nc" id="L64">            Integer[] invalidIds = reportSectionIds</span>
+<span class="nc" id="L65">                .stream()</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">                .filter(i -&gt; !validReportSectionIds.contains(i))</span>
+<span class="nc" id="L67">                .distinct()</span>
+<span class="nc" id="L68">                .toArray(Integer[]::new);</span>
+
+<span class="nc" id="L70">            throw InvalidReportSectionFieldTypeException.invalidReportSectionIds(invalidIds);</span>
+        }
+<span class="nc" id="L72">    }</span>
+
+    public PreferenceResponse getPreferences(BigInteger preferenceId) {
+
+<span class="nc" id="L76">        val preferenceEntity = preferenceRepository.findByPreferenceId(preferenceId);</span>
+<span class="nc" id="L77">        val preferenceReportSectionEntities =</span>
+<span class="nc" id="L78">            preferenceReportSectionRepository.findPreferenceReportSectionEntitiesByPreferenceId(preferenceId);</span>
+
+<span class="nc" id="L80">        val preferenceResponseBuilder = PreferenceResponseModelConverter.create()</span>
+<span class="nc" id="L81">            .createFromEntity(preferenceEntity)</span>
+<span class="nc" id="L82">            .toBuilder();</span>
+
+<span class="nc bnc" id="L84" title="All 4 branches missed.">        if (preferenceReportSectionEntities != null &amp;&amp; !preferenceReportSectionEntities.isEmpty()) {</span>
+<span class="nc" id="L85">            preferenceResponseBuilder.preferenceReportSections(preferenceReportSectionEntities.stream()</span>
+<span class="nc" id="L86">                .map(preferenceReport -&gt; PreferenceResponse.PreferenceReportSection.builder()</span>
+<span class="nc" id="L87">                    .reportSectionId(preferenceReport.getReportSectionId())</span>
+<span class="nc" id="L88">                    .enabled(preferenceReport.getEnabled())</span>
+<span class="nc" id="L89">                    .build()</span>
+<span class="nc" id="L90">                ).collect(toList())</span>
+            );
+        }
+
+<span class="nc" id="L94">        return preferenceResponseBuilder.build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

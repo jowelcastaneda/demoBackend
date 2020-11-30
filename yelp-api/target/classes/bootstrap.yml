@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: dppr-api
+  cloud:
+    config:
+      uri: ${vcap.services.cloud-config.credentials.uri:${CONFIG_SERVER_URI:http://localhost:8888}}
+  profiles:
+    active: dev-local
+splunk:
+  logging:
+    env: dev

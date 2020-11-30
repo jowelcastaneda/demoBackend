@@ -1,0 +1,22 @@
+-------------------------------------------------------------------------------
+Test set: asia.corelogic.dppr.status.ActuatorEndpointTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 3.907 s <<< FAILURE! - in asia.corelogic.dppr.status.ActuatorEndpointTest
+healthEndpoint  Time elapsed: 0.563 s  <<< ERROR!
+reactor.core.Exceptions$ReactiveException: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: localhost/127.0.0.1:8080
+	at asia.corelogic.dppr.status.ActuatorEndpointTest.healthEndpoint(ActuatorEndpointTest.java:56)
+Caused by: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: localhost/127.0.0.1:8080
+Caused by: java.net.ConnectException: Connection refused
+
+infoEndpoint  Time elapsed: 0.004 s  <<< ERROR!
+reactor.core.Exceptions$ReactiveException: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: localhost/127.0.0.1:8080
+	at asia.corelogic.dppr.status.ActuatorEndpointTest.infoEndpoint(ActuatorEndpointTest.java:68)
+Caused by: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: localhost/127.0.0.1:8080
+Caused by: java.net.ConnectException: Connection refused
+
+exposedActuatorEndpoints  Time elapsed: 0.006 s  <<< ERROR!
+reactor.core.Exceptions$ReactiveException: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: localhost/127.0.0.1:8080
+	at asia.corelogic.dppr.status.ActuatorEndpointTest.exposedActuatorEndpoints(ActuatorEndpointTest.java:25)
+Caused by: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: localhost/127.0.0.1:8080
+Caused by: java.net.ConnectException: Connection refused
+

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.rpdata.maven</groupId>
+        <artifactId>pom-uber</artifactId>
+        <version>1.0.13</version>
+    </parent>
+
+    <groupId>asia.corelogic.dppr</groupId>
+    <artifactId>dppr-api-test</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>dppr-api test</name>
+    <packaging>pom</packaging>
+    <organization>
+        <name>Corelogic Pty Limited.</name>
+        <url>http://www.corelogic.com.au/</url>
+    </organization>
+    <modules>
+        <module>acceptance-test</module>
+        <module>load-test</module>
+    </modules>
+
+</project>

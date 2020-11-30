@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HubMigrationService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DPPR API</a> &gt; <a href="index.source.html" class="el_package">asia.corelogic.dppr.service</a> &gt; <span class="el_source">HubMigrationService.java</span></div><h1>HubMigrationService.java</h1><pre class="source lang-java linenums">package asia.corelogic.dppr.service;
+
+import asia.corelogic.dppr.domain.model.migration.Analytics;
+import asia.corelogic.dppr.domain.model.migration.OrderDetails;
+import asia.corelogic.dppr.domain.model.migration.SectionConfig;
+import asia.corelogic.dppr.entity.AnalyticsSessionEntity;
+import asia.corelogic.dppr.entity.HubTemporaryEntity;
+import asia.corelogic.dppr.entity.PreferenceEntity;
+import asia.corelogic.dppr.entity.PreferenceReportSectionEntity;
+import asia.corelogic.dppr.entity.ReportEntity;
+import asia.corelogic.dppr.repository.AnalyticsSessionRepository;
+import asia.corelogic.dppr.repository.HubTemporaryRepository;
+import asia.corelogic.dppr.repository.PreferenceReportSectionRepository;
+import asia.corelogic.dppr.repository.PreferenceRepository;
+import asia.corelogic.dppr.repository.ReportRepository;
+import asia.corelogic.dppr.repository.ReportSectionRepository;
+import asia.corelogic.dppr.util.Base64Util;
+import asia.corelogic.dppr.util.DateTimeUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.logstash.logback.encoder.org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.UncheckedIOException;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static asia.corelogic.dppr.domain.model.CountryCode.AU;
+import static asia.corelogic.dppr.domain.model.CountryCode.NZ;
+
+@Service
+<span class="fc" id="L41">@Slf4j</span>
+@RequiredArgsConstructor
+public class HubMigrationService {
+
+    private static final int NUMBER_ZERO = 0;
+    private static final int NUMBER_ONE = 1;
+    private static final int NUMBER_TWO = 2;
+    private static final int NUMBER_THREE = 3;
+    private static final int NUMBER_FOUR = 4;
+    private static final int NUMBER_FIVE = 5;
+    private static final int NUMBER_SIX = 6;
+    private static final int NUMBER_SEVEN = 7;
+    private static final int NUMBER_EIGHT = 8;
+    private static final int NUMBER_NINE = 9;
+    private static final int NUMBER_TEN = 10;
+    private static final int NUMBER_ELEVEN = 11;
+    private static final int NUMBER_TWELVE = 12;
+    private static final int NUMBER_THIRTEEN = 13;
+    private static final int NUMBER_FOURTEEN = 14;
+    private static final int NUMBER_FIFTEEN = 15;
+    private static final int NUMBER_SIXTEEN = 16;
+    private static final int NUMBER_SEVENTEEN = 17;
+    private static final int NUMBER_EIGHTEEN = 18;
+    private static final int NUMBER_NINETEEN = 19;
+    private final DateTimeUtil dateTimeUtil;
+    private final ReportRepository reportRepository;
+    private final AnalyticsSessionRepository analyticsSessionRepository;
+    private final PreferenceRepository preferenceRepository;
+    private final PreferenceReportSectionRepository preferenceReportSectionRepository;
+    private final ReportSectionRepository reportSectionRepository;
+    private final HubTemporaryRepository hubTemporaryRepository;
+
+    public String saveOrderDetails(String dppAuthOrder) throws JsonProcessingException {
+<span class="fc" id="L74">        List&lt;OrderDetails&gt; orderDetails = getOrderDetails(new String(Base64Util.convertDataUrlToBytes(dppAuthOrder)));</span>
+<span class="fc" id="L75">        String[] commons = {&quot;Property Photo&quot;, &quot;Map&quot;, &quot;Property Details&quot;, &quot;Estimated Value&quot;, &quot;Property History&quot;, &quot;Suburb Insights&quot;, &quot;Comparable Properties&quot;};</span>
+<span class="fc" id="L76">        String[] auOnlySections = {&quot;Local Schools&quot;};</span>
+<span class="fc" id="L77">        String[] nzOnlySections = {&quot;Record of Title Detail&quot;, &quot;Rating Valuation&quot;};</span>
+<span class="fc" id="L78">        String[] auSections = ArrayUtils.addAll(commons, auOnlySections);</span>
+<span class="fc" id="L79">        String[] nzSections = ArrayUtils.addAll(commons, nzOnlySections);</span>
+
+<span class="fc" id="L81">        int id = 1;</span>
+
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        for (OrderDetails order : orderDetails) {</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">            String[] sections = order.getLookUpRegionId().equals(&quot;1&quot;) ? auSections : nzSections;</span>
+
+            // Save Preference Configurations
+<span class="fc" id="L87">            savePreferenceConfig(order);</span>
+
+            // Save Order Details
+<span class="fc" id="L90">            saveOrderDetails(order, id);</span>
+
+            // Save Hub Temporary table data
+<span class="fc" id="L93">            savePropertyHubData(order, id);</span>
+
+            // Save Report Section Configurations
+<span class="fc" id="L96">            saveReportSectionConfig(sections, id, order.getSectionConfigurations());</span>
+
+            // report and preference id increment
+<span class="fc" id="L99">            id++;</span>
+<span class="fc" id="L100">        }</span>
+
+<span class="fc" id="L102">        return &quot;success&quot;;</span>
+    }
+
+    public String saveAnalyticsData(String dppAnalyticsSession) {
+<span class="fc" id="L106">        List&lt;Analytics&gt; analyticsDetails = getAnalyticDetails(new String(Base64Util.convertDataUrlToBytes(dppAnalyticsSession)));</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        for (Analytics data : analyticsDetails) {</span>
+<span class="fc" id="L108">            ReportEntity order = reportRepository.findByReportLink(data.getEncryptedId());</span>
+
+            // Save Analytics Data
+<span class="fc" id="L111">            analyticsSessionRepository.save(AnalyticsSessionEntity.builder()</span>
+<span class="fc" id="L112">                    .reportId(order.getReportId())</span>
+<span class="fc" id="L113">                    .reportSections(data.getDppSections())</span>
+<span class="fc" id="L114">                    .comparableProperties(data.getComparableProperties())</span>
+<span class="fc" id="L115">                    .localSchools(data.getLocalSchools())</span>
+<span class="fc" id="L116">                    .openDateTime(DateTimeUtil.convertStringToDateTime(data.getOpenDateTime()))</span>
+<span class="fc" id="L117">                    .closeDateTime(DateTimeUtil.convertStringToDateTime(data.getCloseDateTime()))</span>
+<span class="fc" id="L118">                    .build());</span>
+<span class="fc" id="L119">        }</span>
+<span class="fc" id="L120">        return &quot;success&quot;;</span>
+    }
+
+    /**
+     * Get all the data from the base64 file of the dppAuthOrder table from property-hub
+     * Then returns the OrderDetails list that will be save on our database
+     * param dppAuthOrder list
+     * return OrderDetails List
+     */
+    private List&lt;OrderDetails&gt; getOrderDetails(String dppAuthOrder) {
+<span class="fc" id="L130">        List&lt;OrderDetails&gt; orders = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L131">        try (StringReader csvReader = new StringReader(dppAuthOrder)) {</span>
+<span class="fc" id="L132">            Iterable&lt;CSVRecord&gt; records = new CSVParser(csvReader, CSVFormat.EXCEL);</span>
+<span class="fc" id="L133">            records.forEach(record -&gt; orders.add(OrderDetails.builder()</span>
+<span class="fc" id="L134">                    .psxOrderId(record.get(NUMBER_ZERO))</span>
+<span class="fc" id="L135">                    .encryptedId(record.get(NUMBER_ONE))</span>
+<span class="fc" id="L136">                    .propertyId(record.get(NUMBER_TWO))</span>
+<span class="fc" id="L137">                    .propertyAddress(record.get(NUMBER_THREE))</span>
+<span class="fc" id="L138">                    .lookUpRegionId(record.get(NUMBER_FOUR))</span>
+<span class="fc" id="L139">                    .recipientFullName(record.get(NUMBER_FIVE))</span>
+<span class="fc" id="L140">                    .integratorFullName(record.get(NUMBER_SIX))</span>
+<span class="fc" id="L141">                    .phone(record.get(NUMBER_SEVEN))</span>
+<span class="fc" id="L142">                    .userGuid(record.get(NUMBER_EIGHT))</span>
+<span class="fc" id="L143">                    .sectionConfigurations(record.get(NUMBER_NINE))</span>
+<span class="fc" id="L144">                    .createdDate(record.get(NUMBER_TEN))</span>
+<span class="fc" id="L145">                    .expirationDate(record.get(NUMBER_ELEVEN))</span>
+<span class="fc" id="L146">                    .email(record.get(NUMBER_TWELVE))</span>
+<span class="fc" id="L147">                    .footerBackgroundColor(record.get(NUMBER_THIRTEEN))</span>
+<span class="fc" id="L148">                    .headerBackgroundColor(record.get(NUMBER_FOURTEEN))</span>
+<span class="fc" id="L149">                    .footerFontColor(record.get(NUMBER_FIFTEEN))</span>
+<span class="fc" id="L150">                    .headerFontColor(record.get(NUMBER_SIXTEEN))</span>
+<span class="fc" id="L151">                    .bodyBackgroundColor(record.get(NUMBER_SEVENTEEN))</span>
+<span class="fc" id="L152">                    .headerLogoUrl(record.get(NUMBER_EIGHTEEN))</span>
+<span class="fc" id="L153">                    .disclaimer(record.get(NUMBER_NINETEEN))</span>
+<span class="fc" id="L154">                    .build()));</span>
+<span class="nc" id="L155">        } catch (IOException e) {</span>
+<span class="nc" id="L156">            throw new UncheckedIOException(&quot;Encountered error parsing dppAuthOrder-csv!&quot;, e);</span>
+<span class="fc" id="L157">        }</span>
+<span class="fc" id="L158">        return orders;</span>
+    }
+
+    /**
+     * Get all the data from the base64 file of the dppAnalyticsSession table from property-hub
+     * Then returns the AnalyticsData list that will be save on our database
+     * param dppAnalyticsSession list
+     * return analyticsData List
+     */
+    private List&lt;Analytics&gt; getAnalyticDetails(String dppAnalyticsSession) {
+<span class="fc" id="L168">        List&lt;Analytics&gt; analyticsData = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L169">        try (StringReader csvReader = new StringReader(dppAnalyticsSession)) {</span>
+<span class="fc" id="L170">            Iterable&lt;CSVRecord&gt; records = new CSVParser(csvReader, CSVFormat.EXCEL);</span>
+<span class="fc" id="L171">            records.forEach(record -&gt; analyticsData.add(Analytics.builder()</span>
+<span class="fc" id="L172">                    .encryptedId(record.get(NUMBER_ONE))</span>
+<span class="fc" id="L173">                    .dppSections(record.get(NUMBER_TWO))</span>
+<span class="fc" id="L174">                    .comparableProperties(record.get(NUMBER_THREE))</span>
+<span class="fc" id="L175">                    .localSchools(record.get(NUMBER_FOUR))</span>
+<span class="fc" id="L176">                    .closeDateTime(record.get(NUMBER_FIVE))</span>
+<span class="fc" id="L177">                    .openDateTime(record.get(NUMBER_SIX))</span>
+<span class="fc" id="L178">                    .build()));</span>
+<span class="nc" id="L179">        } catch (IOException e) {</span>
+<span class="nc" id="L180">            throw new UncheckedIOException(&quot;Encountered error parsing dppAnalyticsSession-csv!&quot;, e);</span>
+<span class="fc" id="L181">        }</span>
+<span class="fc" id="L182">        return analyticsData;</span>
+    }
+
+    /**
+     * Save all the data from the base64 file of the dppLenderConfig table from property-hub
+     * param order, details about the report
+     */
+    private void savePreferenceConfig(OrderDetails order) {
+<span class="fc" id="L190">        preferenceRepository.save(PreferenceEntity.builder()</span>
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">                .footerBackgroundColor(order.getFooterBackgroundColor().isBlank() ? &quot;#004165&quot; : order.getFooterBackgroundColor())</span>
+<span class="pc bpc" id="L192" title="1 of 2 branches missed.">                .headerBackgroundColor(order.getHeaderBackgroundColor().isBlank() ? &quot;#004165&quot; : order.getHeaderBackgroundColor())</span>
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">                .footerFontColor(order.getFooterFontColor().isBlank() ? &quot;#ffffff&quot; : order.getFooterFontColor())</span>
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">                .headerFontColor(order.getHeaderFontColor().isBlank() ? &quot;#ffffff&quot; : order.getHeaderFontColor())</span>
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">                .bodyBackgroundColor(order.getBodyBackgroundColor().isBlank() ? &quot;#fafafa&quot; : order.getBodyBackgroundColor())</span>
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">                .headerLogoUrl(order.getHeaderLogoUrl().isBlank() ? &quot;/src/styles/hcImages/WhiteLogo_Corelogic.svg&quot; : order.getHeaderLogoUrl())</span>
+<span class="fc" id="L197">                .disclaimer(order.getDisclaimer())</span>
+<span class="fc" id="L198">                .build());</span>
+<span class="fc" id="L199">    }</span>
+
+    /**
+     * Save all the data from the base64 file of the dppAuthOrder table from property-hub
+     * param order, details about the report
+     * param id, preference ID &amp; report Id
+     */
+    private void saveOrderDetails(OrderDetails order, int id) {
+
+<span class="fc" id="L208">        reportRepository.save(ReportEntity.builder()</span>
+<span class="fc" id="L209">                .preferenceId(BigInteger.valueOf(id))</span>
+<span class="fc" id="L210">                .reportLink(order.getEncryptedId())</span>
+<span class="fc" id="L211">                .integratorId(1)</span>
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">                .countryCode(order.getLookUpRegionId().equals(&quot;1&quot;) ? AU : NZ)</span>
+<span class="fc" id="L213">                .integratorUserId(order.getUserGuid())</span>
+<span class="fc" id="L214">                .integratorFullName(order.getIntegratorFullName())</span>
+<span class="fc" id="L215">                .integratorEmail(order.getEmail())</span>
+<span class="fc" id="L216">                .integratorPhone(order.getPhone())</span>
+<span class="fc" id="L217">                .recipientFullName(order.getRecipientFullName())</span>
+<span class="fc" id="L218">                .propertyId(BigInteger.valueOf(Integer.parseInt(order.getPropertyId())))</span>
+<span class="fc" id="L219">                .propertyAddress(order.getPropertyAddress())</span>
+<span class="fc" id="L220">                .createdBy(order.getUserGuid())</span>
+<span class="fc" id="L221">                .createdAt(dateTimeUtil.convertDateStringWithAEDTZoneToDateTimeWithUTCZone(order.getCreatedDate()))</span>
+<span class="fc" id="L222">                .updatedBy(order.getUserGuid())</span>
+<span class="fc" id="L223">                .updatedAt(dateTimeUtil.convertDateStringWithAEDTZoneToDateTimeWithUTCZone(order.getCreatedDate()))</span>
+<span class="fc" id="L224">                .expirationDate(dateTimeUtil.convertDateStringWithAEDTZoneToDateTimeWithUTCZone(order.getExpirationDate()))</span>
+<span class="fc" id="L225">                .createdBy(order.getUserGuid())</span>
+<span class="fc" id="L226">                .build());</span>
+<span class="fc" id="L227">    }</span>
+
+    /**
+     * Save all report IDs to our Temporary table for Property Hub
+     * param order, details about the report
+     * param id, preference ID &amp; report Id
+     */
+    private void savePropertyHubData(OrderDetails order, int id) {
+<span class="fc" id="L235">        hubTemporaryRepository.save(HubTemporaryEntity.builder()</span>
+<span class="fc" id="L236">                .orderId(BigInteger.valueOf(Integer.parseInt(order.getPsxOrderId())))</span>
+<span class="fc" id="L237">                .preferenceId(BigInteger.valueOf(id))</span>
+<span class="fc" id="L238">                .reportId(BigInteger.valueOf(id))</span>
+<span class="fc" id="L239">                .build());</span>
+<span class="fc" id="L240">    }</span>
+
+    /**
+     * Save all the data from the base64 file of the dppLenderSectionConfiguration table from property-hub
+     * param sections, list of sections for each country
+     * param id, preference ID
+     * param sectionConfigurations, list of data for each section
+     */
+    private void saveReportSectionConfig(String[] sections, int id, String sectionConfigurations) throws JsonProcessingException {
+<span class="pc bpc" id="L249" title="1 of 2 branches missed.">        if (!sectionConfigurations.isBlank()) {</span>
+<span class="nc" id="L250">            ObjectMapper mapper = new ObjectMapper();</span>
+<span class="nc bnc" id="L251" title="All 2 branches missed.">            for (String section : sections) {</span>
+<span class="nc" id="L252">                preferenceReportSectionRepository.save(PreferenceReportSectionEntity.builder()</span>
+<span class="nc" id="L253">                    .preferenceId(BigInteger.valueOf(id))</span>
+<span class="nc" id="L254">                    .reportSectionId(reportSectionRepository.findByReportSectionName(section).getReportSectionId())</span>
+<span class="nc" id="L255">                    .enabled(isSectionActive(section, Arrays.asList(mapper.readValue(sectionConfigurations, SectionConfig[].class))))</span>
+<span class="nc" id="L256">                    .build());</span>
+            }
+        }
+<span class="fc" id="L259">    }</span>
+
+    /**
+     * Identify if a section is active
+     * Then returns boolean value
+     * param section, name of the section
+     * param sectionConfigs, data for the section
+     * return isSectionActive, always return true when there is no data in sectionConfig
+     */
+    private boolean isSectionActive(String section, List&lt;SectionConfig&gt; sectionConfigs) {
+<span class="nc bnc" id="L269" title="All 2 branches missed.">        for (SectionConfig config : sectionConfigs) {</span>
+<span class="nc bnc" id="L270" title="All 2 branches missed.">            if (config.getLookUp().getValue().equals(section)) {</span>
+<span class="nc" id="L271">                return config.getActive().equals(&quot;true&quot;);</span>
+            }
+<span class="nc" id="L273">        }</span>
+<span class="nc" id="L274">        return true;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

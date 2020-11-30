@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReportController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DPPR API</a> &gt; <a href="index.source.html" class="el_package">asia.corelogic.dppr.controller</a> &gt; <span class="el_source">ReportController.java</span></div><h1>ReportController.java</h1><pre class="source lang-java linenums">package asia.corelogic.dppr.controller;
+
+import asia.corelogic.dppr.annotation.GeneralValidation;
+import asia.corelogic.dppr.annotation.PageableConstraint;
+import asia.corelogic.dppr.config.SwaggerConfig;
+import asia.corelogic.dppr.config.access.ServiceAccessCodes;
+import asia.corelogic.dppr.domain.model.request.ReportRequest;
+import asia.corelogic.dppr.domain.model.response.PagedReportResponse;
+import asia.corelogic.dppr.domain.model.response.ReportResponse;
+import asia.corelogic.dppr.service.ReportService;
+import com.rpdata.access.client.api.ClientSessionFacade;
+import com.rpdata.access.client.api.annotation.ApiAccess;
+import com.rpdata.access.client.api.annotation.UserToken;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
+import java.math.BigInteger;
+
+@Validated
+@Api(tags = {SwaggerConfig.REPORT_API}, value = &quot;/reports&quot;)
+@RestController
+@RequestMapping(&quot;/reports&quot;)
+@RequiredArgsConstructor
+public class ReportController {
+
+    private final ReportService reportService;
+    private final ClientSessionFacade clientSessionFacade;
+
+    @ApiOperation(
+            value = &quot;Adds a report&quot;,
+            notes = &quot;Returns an object of report details.&quot;
+    )
+    @UserToken
+    @ApiAccess(serviceAccessId = ServiceAccessCodes.DPPR_API)
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ReportResponse addReport(@Valid @RequestBody ReportRequest reportRequest) {
+<span class="fc" id="L52">        return reportService.saveReport(reportRequest);</span>
+    }
+
+    @ApiOperation(
+            value = &quot;Retrieve a report&quot;,
+            notes = &quot;Returns an object of report details.&quot;)
+    @UserToken
+    @ApiAccess(serviceAccessId = ServiceAccessCodes.DPPR_API)
+    @GetMapping(&quot;/{reportId}&quot;)
+    public ReportResponse getReportByReportId(@Valid @PathVariable @GeneralValidation(value = &quot;reportId&quot;) BigInteger reportId) {
+<span class="fc" id="L62">        return reportService.getReportByReportId(reportId);</span>
+    }
+
+    @ApiAccess(serviceAccessId = ServiceAccessCodes.DPPR_API)
+    @ApiOperation(value = &quot;Retrieve list of Reports by integratorId&quot;)
+    @GetMapping
+    public PagedReportResponse getReportsByIntegrator(
+            @RequestParam(value = &quot;integratorId&quot;, required = false) Integer integratorId,
+            @RequestParam(value = &quot;integratorUserId&quot;, required = false, defaultValue = &quot;&quot;) String integratorUserId,
+            @PageableConstraint(maxPerPage = PageableConstraint.DEFAULT_MAX_PAGE_SIZE)
+            @PageableDefault(size = PageableConstraint.DEFAULT_MIN_PAGE_SIZE) Pageable pageable) {
+<span class="fc" id="L73">        return reportService.getReportsByIntegrator(integratorId, overrideUsernameFromUserToken(integratorUserId), pageable);</span>
+    }
+
+    private String overrideUsernameFromUserToken(String integratorUserId) {
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">        if (clientSessionFacade.isUserAuthToken()) {</span>
+<span class="nc" id="L78">            return clientSessionFacade.userAuthDetails().getUsername();</span>
+        }
+<span class="fc" id="L80">        return integratorUserId;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

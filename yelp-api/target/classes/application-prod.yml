@@ -1,0 +1,15 @@
+acm:
+  oauth:
+    uri: https://api.corelogic.asia/access
+    public:
+      key: auth-public-prod
+    client:
+      key: ovF0WOfSUbVr8wNIpNkn61OiuE38gKsZ
+      secret: ${secrets.oauth.clientSecret}
+
+clapi:
+  property-details-uri: https://api.corelogic.asia/property-details/{countryCode}/properties/{id}
+
+# Digital Property Profiler Report config
+domain:
+  uri: https://dppr.ad.corelogic.asia

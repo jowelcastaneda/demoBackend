@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CountryCode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DPPR API</a> &gt; <a href="index.source.html" class="el_package">asia.corelogic.dppr.domain.model</a> &gt; <span class="el_source">CountryCode.java</span></div><h1>CountryCode.java</h1><pre class="source lang-java linenums">package asia.corelogic.dppr.domain.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+import java.util.stream.Stream;
+
+<span class="fc" id="L8">@AllArgsConstructor</span>
+public enum CountryCode {
+<span class="fc" id="L10">    AU(&quot;au&quot;),</span>
+<span class="fc" id="L11">    NZ(&quot;nz&quot;);</span>
+
+    @Getter
+    private String name;
+
+    public static boolean contains(String test) {
+<span class="pc bpc" id="L17" title="1 of 2 branches missed.">        for (CountryCode code : values()) {</span>
+<span class="pc bpc" id="L18" title="1 of 2 branches missed.">            if (code.name().equalsIgnoreCase(test)) {</span>
+<span class="fc" id="L19">                return true;</span>
+            }
+        }
+<span class="nc" id="L22">        return false;</span>
+    }
+
+    public static CountryCode of(String name) {
+<span class="nc" id="L26">        return Stream.of(CountryCode.values())</span>
+<span class="nc" id="L27">                .filter(c -&gt; c.name.equalsIgnoreCase(name))</span>
+<span class="nc" id="L28">                .findFirst()</span>
+<span class="nc" id="L29">                .orElse(null);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

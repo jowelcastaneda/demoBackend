@@ -1,0 +1,10 @@
+{
+  "simulation": "asia.corelogic.dppr.loadtest.DpprApplicationSimulation",
+  "simulationId": "dpprapplicationsimulation",
+  "start": 1605855516878,
+  "description": "",
+  "scenarios": ["Status Check", "Health"],
+  "assertions": [
+
+  ]
+}

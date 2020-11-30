@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://dppr-dev.ceiyllvpqvxq.ap-southeast-2.rds.amazonaws.com/dppr
+    username: dppr-user
+    password: ${secrets.db.password}
+
+acm:
+  oauth:
+    client:
+      key: ovF0WOfSUbVr8wNIpNkn61OiuE38gKsZ
+      secret: ${secrets.oauth.clientSecret}
+
+# Digital Property Profiler Report config
+domain:
+  uri: https://dppr-dev.apps.ad.corelogic.asia

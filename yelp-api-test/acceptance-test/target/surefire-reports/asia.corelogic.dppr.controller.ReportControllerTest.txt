@@ -1,0 +1,16 @@
+-------------------------------------------------------------------------------
+Test set: asia.corelogic.dppr.controller.ReportControllerTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 0.058 s <<< FAILURE! - in asia.corelogic.dppr.controller.ReportControllerTest
+createAUReport  Time elapsed: 0.044 s  <<< ERROR!
+reactor.core.Exceptions$ReactiveException: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: localhost/127.0.0.1:8080
+	at asia.corelogic.dppr.controller.ReportControllerTest.createAUReport(ReportControllerTest.java:61)
+Caused by: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: localhost/127.0.0.1:8080
+Caused by: java.net.ConnectException: Connection refused
+
+createNZReport  Time elapsed: 0.01 s  <<< ERROR!
+reactor.core.Exceptions$ReactiveException: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: localhost/127.0.0.1:8080
+	at asia.corelogic.dppr.controller.ReportControllerTest.createNZReport(ReportControllerTest.java:97)
+Caused by: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: localhost/127.0.0.1:8080
+Caused by: java.net.ConnectException: Connection refused
+

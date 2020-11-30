@@ -1,0 +1,14 @@
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%n%cyan(%message)</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="asia.corelogic.dppr.config.LoggingRequestFilterFunction" level="INFO"/>
+
+    <root level="WARN">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

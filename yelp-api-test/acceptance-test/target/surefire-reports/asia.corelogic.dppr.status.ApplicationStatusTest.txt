@@ -1,0 +1,24 @@
+-------------------------------------------------------------------------------
+Test set: asia.corelogic.dppr.status.ApplicationStatusTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 0.014 s <<< FAILURE! - in asia.corelogic.dppr.status.ApplicationStatusTest
+testHealthService  Time elapsed: 0 s  <<< ERROR!
+reactor.core.Exceptions$ReactiveException: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: localhost/127.0.0.1:8080
+	at asia.corelogic.dppr.status.ApplicationStatusTest.testHealth(ApplicationStatusTest.java:45)
+	at asia.corelogic.dppr.status.ApplicationStatusTest.testHealthService(ApplicationStatusTest.java:32)
+Caused by: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: localhost/127.0.0.1:8080
+Caused by: java.net.ConnectException: Connection refused
+
+testExternalHealthService  Time elapsed: 0.007 s  <<< ERROR!
+reactor.core.Exceptions$ReactiveException: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: localhost/127.0.0.1:8080
+	at asia.corelogic.dppr.status.ApplicationStatusTest.testHealth(ApplicationStatusTest.java:45)
+	at asia.corelogic.dppr.status.ApplicationStatusTest.testExternalHealthService(ApplicationStatusTest.java:38)
+Caused by: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: localhost/127.0.0.1:8080
+Caused by: java.net.ConnectException: Connection refused
+
+testStatusService  Time elapsed: 0.005 s  <<< ERROR!
+reactor.core.Exceptions$ReactiveException: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: localhost/127.0.0.1:8080
+	at asia.corelogic.dppr.status.ApplicationStatusTest.testStatusService(ApplicationStatusTest.java:22)
+Caused by: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: localhost/127.0.0.1:8080
+Caused by: java.net.ConnectException: Connection refused
+

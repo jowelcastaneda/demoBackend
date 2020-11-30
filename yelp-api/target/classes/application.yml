@@ -1,0 +1,47 @@
+application:
+  project:
+    version: 0.0.1-SNAPSHOT
+
+management:
+  endpoints:
+    web:
+      base-path: /private/actuator
+
+spring:
+  messages:
+    basename: messages
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/dppr
+    username: postgres
+    hikari:
+      connectionTimeout: 30000
+      idleTimeout: 600000
+      maxLifetime: 1800000
+      maximumPoolSize: 200
+      minimumIdle: 5
+      data-source-properties: "stringtype=unspecified"
+
+acm:
+  oauth:
+    uri: https://api-uat.corelogic.asia/access
+    public:
+      key: auth-public-uat
+    client:
+      key: 1
+      secret: 1
+  billing:
+    none: true
+
+clapi:
+  property-details-uri: https://api-uat.corelogic.asia/property-details/{countryCode}/properties/{id}
+  oauth:
+    uri: https://access-uat-api.corelogic.asia/access
+    clientKey: ovF0WOfSUbVr8wNIpNkn61OiuE38gKsZ
+    clientSecret: A3BeQmIF55316ms0
+
+# Digital Property Profiler Report config
+domain:
+  uri: http://localhost:3000

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PreferenceModelConverter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DPPR API</a> &gt; <a href="index.source.html" class="el_package">asia.corelogic.dppr.domain.model.converter.request</a> &gt; <span class="el_source">PreferenceModelConverter.java</span></div><h1>PreferenceModelConverter.java</h1><pre class="source lang-java linenums">package asia.corelogic.dppr.domain.model.converter.request;
+
+
+import asia.corelogic.dppr.entity.PreferenceEntity;
+import asia.corelogic.dppr.domain.model.converter.DTOConverter;
+import asia.corelogic.dppr.domain.model.request.Preference;
+import lombok.NoArgsConstructor;
+import org.springframework.web.util.HtmlUtils;
+
+@NoArgsConstructor(staticName = &quot;create&quot;)
+public final class PreferenceModelConverter implements DTOConverter&lt;Preference, PreferenceEntity&gt; {
+
+    @Override
+    public PreferenceEntity createFromDto(Preference dto) {
+<span class="nc" id="L15">        return PreferenceEntity.builder()</span>
+<span class="nc" id="L16">            .footerBackgroundColor(dto.getFooterBackgroundColor())</span>
+<span class="nc" id="L17">            .headerBackgroundColor(dto.getHeaderBackgroundColor())</span>
+<span class="nc" id="L18">            .footerFontColor(dto.getFooterFontColor())</span>
+<span class="nc" id="L19">            .headerFontColor(dto.getHeaderFontColor())</span>
+<span class="nc" id="L20">            .bodyBackgroundColor(dto.getBodyBackgroundColor())</span>
+<span class="nc" id="L21">            .disclaimer(HtmlUtils.htmlEscape(dto.getDisclaimer()))</span>
+<span class="nc" id="L22">            .build();</span>
+    }
+
+    public PreferenceEntity createFromDtoWithHeaderLogoUrl(Preference dto, String headerLogoUrl) {
+<span class="nc" id="L26">        return createFromDto(dto)</span>
+<span class="nc" id="L27">            .toBuilder()</span>
+<span class="nc" id="L28">            .headerLogoUrl(headerLogoUrl)</span>
+<span class="nc" id="L29">            .build();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

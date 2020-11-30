@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReportService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DPPR API</a> &gt; <a href="index.source.html" class="el_package">asia.corelogic.dppr.service</a> &gt; <span class="el_source">ReportService.java</span></div><h1>ReportService.java</h1><pre class="source lang-java linenums">package asia.corelogic.dppr.service;
+
+import asia.corelogic.dppr.domain.gateway.PropertyDetailsGateway;
+import asia.corelogic.dppr.domain.gateway.model.PropertyLocation;
+import asia.corelogic.dppr.domain.model.CountryCode;
+import asia.corelogic.dppr.domain.model.request.ReportRequest;
+import asia.corelogic.dppr.domain.model.response.PagedReportResponse;
+import asia.corelogic.dppr.domain.model.response.ReportResponse;
+import asia.corelogic.dppr.entity.ReportEntity;
+import asia.corelogic.dppr.exception.ResourceInvalidException;
+import asia.corelogic.dppr.repository.IntegratorRepository;
+import asia.corelogic.dppr.repository.PreferenceRepository;
+import asia.corelogic.dppr.repository.ReportRepository;
+import asia.corelogic.dppr.util.DateTimeUtil;
+import asia.corelogic.dppr.util.UUIDGeneratorUtil;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.math.BigInteger;
+import java.time.ZonedDateTime;
+
+@Service
+<span class="fc" id="L28">@Slf4j</span>
+@RequiredArgsConstructor
+public class ReportService {
+    private final ReportRepository reportRepository;
+    private final IntegratorRepository integratorRepository;
+    private final PreferenceRepository preferenceRepository;
+    private final PropertyDetailsGateway propertyDetailsGateway;
+    private final DateTimeUtil dateTimeUtil;
+    private final UUIDGeneratorUtil uuidGeneratorUtil;
+
+    @Value(&quot;${domain.uri}&quot;)
+    private String domain;
+
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">    public ReportResponse getReportByReportId(@NonNull BigInteger reportId) {</span>
+        // Get report from database
+<span class="fc" id="L43">        ReportEntity report = reportRepository.findByReportId(reportId);</span>
+
+        // Create report response body
+<span class="fc" id="L46">        return mapReportEntityToDomain(report);</span>
+    }
+
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">    public ReportResponse saveReport(@NonNull ReportRequest reportRequest) {</span>
+        // Defined a temporary Date expiration
+<span class="fc" id="L51">        final ZonedDateTime expirationDate = dateTimeUtil.plusDays(30);</span>
+<span class="fc" id="L52">        final String code = uuidGeneratorUtil.generateRandomUUID().toString();</span>
+
+        // Convert string countryCode to enum
+<span class="fc" id="L55">        CountryCode countryCode = CountryCode.of(reportRequest.getCountryCode());</span>
+
+        // Check if property is valid and returns property location
+<span class="fc" id="L58">        PropertyLocation propertyLocation = propertyDetailsGateway</span>
+<span class="fc" id="L59">                .getLocationByPropertyIdAndCountryCode(reportRequest.getPropertyId(), countryCode);</span>
+
+        // Check if integrator is valid
+<span class="fc" id="L62">        validateIntegratorId(reportRequest.getIntegratorId());</span>
+
+        // Check if integrator is valid
+<span class="fc" id="L65">        validatePreferenceId(reportRequest.getPreferenceId());</span>
+
+        // Create Entity
+<span class="fc" id="L68">        ReportEntity reportEntity = ReportEntity.builder()</span>
+<span class="fc" id="L69">                .preferenceId(reportRequest.getPreferenceId())</span>
+<span class="fc" id="L70">                .integratorId(reportRequest.getIntegratorId())</span>
+<span class="fc" id="L71">                .propertyId(reportRequest.getPropertyId())</span>
+<span class="fc" id="L72">                .propertyAddress(propertyLocation.getSingleLine())</span>
+<span class="fc" id="L73">                .countryCode(countryCode)</span>
+<span class="fc" id="L74">                .integratorUserId(reportRequest.getIntegratorUserId())</span>
+<span class="fc" id="L75">                .integratorFullName(reportRequest.getIntegratorFullName())</span>
+<span class="fc" id="L76">                .integratorEmail(reportRequest.getIntegratorEmail())</span>
+<span class="fc" id="L77">                .integratorPhone(reportRequest.getIntegratorPhone())</span>
+<span class="fc" id="L78">                .recipientFullName(reportRequest.getRecipientFullName())</span>
+<span class="fc" id="L79">                .reportLink(code)</span>
+<span class="fc" id="L80">                .createdAt(dateTimeUtil.currentDate())</span>
+<span class="fc" id="L81">                .createdBy(reportRequest.getIntegratorUserId())</span>
+<span class="fc" id="L82">                .updatedBy(reportRequest.getIntegratorUserId())</span>
+<span class="fc" id="L83">                .updatedAt(dateTimeUtil.currentDate())</span>
+<span class="fc" id="L84">                .expirationDate(expirationDate)</span>
+<span class="fc" id="L85">                .build();</span>
+
+        // Save Report
+<span class="fc" id="L88">        ReportEntity savedData = reportRepository.save(reportEntity);</span>
+
+<span class="fc" id="L90">        return mapReportEntityToDomain(savedData);</span>
+    }
+
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">    private ReportResponse mapReportEntityToDomain(@NonNull ReportEntity reportEntity) {</span>
+<span class="fc" id="L94">        return ReportResponse.builder()</span>
+<span class="fc" id="L95">                .reportId(reportEntity.getReportId())</span>
+<span class="fc" id="L96">                .preference(ReportResponse.Preference.builder().preferenceId(reportEntity.getPreferenceId()).build())</span>
+<span class="fc" id="L97">                .countryCode(reportEntity.getCountryCode())</span>
+<span class="fc" id="L98">                .integratorId(reportEntity.getIntegratorId())</span>
+<span class="fc" id="L99">                .integratorUserId(reportEntity.getIntegratorUserId())</span>
+<span class="fc" id="L100">                .integratorFullName(reportEntity.getIntegratorFullName())</span>
+<span class="fc" id="L101">                .integratorEmail(reportEntity.getIntegratorEmail())</span>
+<span class="fc" id="L102">                .integratorPhone(reportEntity.getIntegratorPhone())</span>
+<span class="fc" id="L103">                .recipientFullName(reportEntity.getRecipientFullName())</span>
+<span class="fc" id="L104">                .propertyId(reportEntity.getPropertyId())</span>
+<span class="fc" id="L105">                .reportLink(String.format(&quot;%s/%s&quot;, domain, reportEntity.getReportLink()))</span>
+<span class="fc" id="L106">                .orderedDate(reportEntity.getCreatedAt().toLocalDate())</span>
+<span class="fc" id="L107">                .expirationDate(reportEntity.getExpirationDate().toLocalDate())</span>
+<span class="fc" id="L108">                .build();</span>
+    }
+
+    public PagedReportResponse getReportsByIntegrator(Integer integratorId, String integratorUserId, Pageable pageable) {
+<span class="pc bpc" id="L112" title="1 of 4 branches missed.">        if (integratorId == null || !integratorRepository.existsById(integratorId)) {</span>
+<span class="fc" id="L113">            throw ResourceInvalidException.invalidIntegratorId();</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        } else if (!integratorUserId.isEmpty() &amp;&amp;</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">            !reportRepository.existsByIntegratorIdAndIntegratorUserId(integratorId, integratorUserId)) {</span>
+<span class="fc" id="L116">            throw ResourceInvalidException.invalidIntegratorUserId();</span>
+        }
+
+        try {
+<span class="fc bfc" id="L120" title="All 2 branches covered.">            if (integratorUserId.isEmpty()) {</span>
+<span class="fc" id="L121">                return PagedReportResponse.createPagedReport(reportRepository.findAllByIntegratorId(integratorId, pageable), domain);</span>
+            }
+<span class="fc" id="L123">            return PagedReportResponse.createPagedReport(</span>
+<span class="fc" id="L124">                    reportRepository.findAllByIntegratorIdAndIntegratorUserId(integratorId, integratorUserId, pageable), domain);</span>
+<span class="fc" id="L125">        } catch (RuntimeException e) {</span>
+<span class="fc" id="L126">            log.info(String.format(&quot;Failed to retrieve reports: %s&quot;, e.getMessage()));</span>
+<span class="fc" id="L127">            return PagedReportResponse.createPagedReport(Page.empty(pageable), domain);</span>
+        }
+    }
+
+    private void validateIntegratorId(Integer id) {
+<span class="fc" id="L132">        integratorRepository</span>
+<span class="fc" id="L133">                .findById(id)</span>
+<span class="fc" id="L134">                .orElseThrow(ResourceInvalidException::invalidIntegratorId);</span>
+<span class="fc" id="L135">    }</span>
+
+    private void validatePreferenceId(BigInteger id) {
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        if (id != null) {</span>
+<span class="fc" id="L139">            preferenceRepository</span>
+<span class="fc" id="L140">                    .findById(id)</span>
+<span class="fc" id="L141">                    .orElseThrow(ResourceInvalidException::invalidPreferenceId);</span>
+        }
+<span class="fc" id="L143">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

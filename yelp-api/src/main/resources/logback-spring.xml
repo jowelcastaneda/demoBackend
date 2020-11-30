@@ -1,0 +1,61 @@
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="http://www.padual.com/java/logback.xsd">
+    <springProperty name="app_env" source="splunk.logging.env" />
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <pattern>
+                    <pattern>
+                        {
+                        "app": "dppr",
+                        "app_env": "${app_env}"
+                        }
+                    </pattern>
+                </pattern>
+                <logLevel>
+                    <fieldName>level</fieldName>
+                </logLevel>
+                <timestamp>
+                    <fieldName>timestamp</fieldName>
+                    <timeZone>UTC</timeZone>
+                </timestamp>
+                <loggerName>
+                    <fieldName>logger</fieldName>
+                </loggerName>
+                <threadName>
+                    <fieldName>thread</fieldName>
+                </threadName>
+                <mdc />
+                <arguments>
+                    <includeNonStructuredArguments>false</includeNonStructuredArguments>
+                </arguments>
+                <message>
+                    <fieldName>msg</fieldName>
+                </message>
+                <stackTrace>
+                    <fieldName>stack</fieldName>
+                </stackTrace>
+            </providers>
+        </encoder>
+    </appender>
+
+    <appender name="SERVICE_USAGE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%msg, app_env="${app_env}", usage_log="dppr"%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="USAGE_EVENT_LOG" level="INFO" additivity="false">
+        <appender-ref ref="SERVICE_USAGE"/>
+    </logger>
+
+    <logger name="asia.corelogic.dppr" level="INFO"/>
+    <logger name="org.springframework.cloud.config.client" level="INFO"/>
+    <logger name="org.flywaydb" level="INFO" />
+    <logger name="org.hibernate" level="INFO"/>
+
+    <root level="WARN">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

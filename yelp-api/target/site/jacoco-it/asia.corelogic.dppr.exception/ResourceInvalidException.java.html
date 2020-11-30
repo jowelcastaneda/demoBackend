@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ResourceInvalidException.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DPPR API</a> &gt; <a href="index.source.html" class="el_package">asia.corelogic.dppr.exception</a> &gt; <span class="el_source">ResourceInvalidException.java</span></div><h1>ResourceInvalidException.java</h1><pre class="source lang-java linenums">package asia.corelogic.dppr.exception;
+
+import lombok.Getter;
+
+public final class ResourceInvalidException extends RuntimeException {
+
+    @Getter
+    private final String field;
+
+    private ResourceInvalidException(String message, String field) {
+<span class="nc" id="L11">        super(message);</span>
+<span class="nc" id="L12">        this.field = field;</span>
+<span class="nc" id="L13">    }</span>
+
+    public static ResourceInvalidException resourceInvalidField(String field) {
+<span class="nc" id="L16">        return new ResourceInvalidException(</span>
+            &quot;asia.corelogic.dppr.annotations.validations.EnsureValidField.message&quot;,
+            field
+        );
+    }
+
+    public static ResourceInvalidException invalidIntegratorId() {
+<span class="nc" id="L23">        return resourceInvalidField(&quot;integratorId&quot;);</span>
+    }
+
+    public static ResourceInvalidException invalidIntegratorUserId() {
+<span class="nc" id="L27">        return resourceInvalidField(&quot;integratorUserId&quot;);</span>
+    }
+
+    public static ResourceInvalidException invalidPreferenceId() {
+<span class="nc" id="L31">        return resourceInvalidField(&quot;preferenceId&quot;);</span>
+    }
+
+    public static ResourceInvalidException invalidPropertyId() {
+<span class="nc" id="L35">        return resourceInvalidField(&quot;propertyId&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

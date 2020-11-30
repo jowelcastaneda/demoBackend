@@ -1,0 +1,13 @@
+/Users/jowelcastaneda/Projects/DPPR/dppr-api/dppr-api-test/acceptance-test/src/test/java/asia/corelogic/dppr/credentials/TokenCache.java
+/Users/jowelcastaneda/Projects/DPPR/dppr-api/dppr-api-test/acceptance-test/src/test/java/asia/corelogic/dppr/config/LoggingRequestFilterFunction.java
+/Users/jowelcastaneda/Projects/DPPR/dppr-api/dppr-api-test/acceptance-test/src/test/java/asia/corelogic/dppr/credentials/HmacGenerator.java
+/Users/jowelcastaneda/Projects/DPPR/dppr-api/dppr-api-test/acceptance-test/src/test/java/asia/corelogic/dppr/credentials/UserCredentials.java
+/Users/jowelcastaneda/Projects/DPPR/dppr-api/dppr-api-test/acceptance-test/src/test/java/asia/corelogic/dppr/config/FunctionalEnvConfiguration.java
+/Users/jowelcastaneda/Projects/DPPR/dppr-api/dppr-api-test/acceptance-test/src/test/java/asia/corelogic/dppr/status/ActuatorEndpointTest.java
+/Users/jowelcastaneda/Projects/DPPR/dppr-api/dppr-api-test/acceptance-test/src/test/java/asia/corelogic/dppr/controller/model/ReportRequest.java
+/Users/jowelcastaneda/Projects/DPPR/dppr-api/dppr-api-test/acceptance-test/src/test/java/asia/corelogic/dppr/status/ApplicationStatusTest.java
+/Users/jowelcastaneda/Projects/DPPR/dppr-api/dppr-api-test/acceptance-test/src/test/java/asia/corelogic/dppr/credentials/Credentials.java
+/Users/jowelcastaneda/Projects/DPPR/dppr-api/dppr-api-test/acceptance-test/src/test/java/asia/corelogic/dppr/controller/PreferenceControllerTest.java
+/Users/jowelcastaneda/Projects/DPPR/dppr-api/dppr-api-test/acceptance-test/src/test/java/asia/corelogic/dppr/controller/model/PreferenceRequest.java
+/Users/jowelcastaneda/Projects/DPPR/dppr-api/dppr-api-test/acceptance-test/src/test/java/asia/corelogic/dppr/controller/ReportControllerTest.java
+/Users/jowelcastaneda/Projects/DPPR/dppr-api/dppr-api-test/acceptance-test/src/test/java/asia/corelogic/dppr/BaseFunctionalTest.java

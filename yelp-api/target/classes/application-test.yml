@@ -1,0 +1,10 @@
+spring:
+  flyway:
+    enabled: false
+
+clapi:
+  property-details-uri: https://api-uat.corelogic.asia/property-details/{countryCode}/properties/{id}
+  oauth:
+    uri: https://access-uat-api.corelogic.asia/access
+    clientKey: ovF0WOfSUbVr8wNIpNkn61OiuE38gKsZ
+    clientSecret: A3BeQmIF55316ms0

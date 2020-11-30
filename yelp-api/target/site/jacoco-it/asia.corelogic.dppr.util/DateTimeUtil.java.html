@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DateTimeUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DPPR API</a> &gt; <a href="index.source.html" class="el_package">asia.corelogic.dppr.util</a> &gt; <span class="el_source">DateTimeUtil.java</span></div><h1>DateTimeUtil.java</h1><pre class="source lang-java linenums">package asia.corelogic.dppr.util;
+
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Date;
+
+<span class="fc" id="L16">@Slf4j</span>
+@Component
+<span class="fc" id="L18">public class DateTimeUtil {</span>
+    public ZonedDateTime currentDate() {
+<span class="fc" id="L20">        final ZoneId zoneId = ZoneId.of(&quot;UTC&quot;);</span>
+<span class="fc" id="L21">        return ZonedDateTime.now().withZoneSameInstant(zoneId);</span>
+    }
+
+<span class="pc bpc" id="L24" title="1 of 2 branches missed.">    public ZonedDateTime plusDays(@NonNull final Integer days) {</span>
+<span class="fc" id="L25">        return currentDate().plusDays(days);</span>
+    }
+
+    // TODO: Temporary for Analytics date conversion.
+    //  remove this later after sprint 3.
+    //  Analytics dates should be in ZoneDateTime
+    public static Date convertStringToDateTime(String date) throws DateTimeParseException {
+<span class="nc bnc" id="L32" title="All 2 branches missed.">        if (StringUtils.isNotBlank(date)) {</span>
+<span class="nc" id="L33">            SimpleDateFormat dateFormat = new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm:ss.S&quot;);</span>
+            try {
+<span class="nc" id="L35">                return dateFormat.parse(date);</span>
+<span class="nc" id="L36">            } catch (DateTimeParseException | ParseException e) {</span>
+<span class="nc" id="L37">                log.error(e.getMessage());</span>
+            }
+        }
+<span class="nc" id="L40">        return null;</span>
+    }
+
+<span class="nc bnc" id="L43" title="All 4 branches missed.">    public ZonedDateTime convertStringToZoneDateTime(@NonNull final String date, @NonNull final String zone) throws DateTimeParseException {</span>
+        try {
+<span class="nc" id="L45">            final ZoneId zoneId = ZoneId.of(zone);</span>
+<span class="nc" id="L46">            final DateTimeFormatter formatter = DateTimeFormatter</span>
+<span class="nc" id="L47">                    .ofPattern(&quot;yyyy-MM-dd HH:mm:ss&quot;)</span>
+<span class="nc" id="L48">                    .withZone(zoneId);</span>
+
+<span class="nc" id="L50">            return ZonedDateTime.parse(date, formatter);</span>
+<span class="nc" id="L51">        } catch (DateTimeParseException e) {</span>
+<span class="nc" id="L52">            log.error(e.getMessage());</span>
+<span class="nc" id="L53">            throw e;</span>
+        }
+    }
+
+<span class="nc bnc" id="L57" title="All 2 branches missed.">    public ZonedDateTime convertZoneDateTimeToAnotherZone(@NonNull final ZonedDateTime zoneDateTime,</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">                                                          @NonNull final String zone) {</span>
+<span class="nc" id="L59">        final ZoneId zoneId = ZoneId.of(zone);</span>
+<span class="nc" id="L60">        return zoneDateTime.withZoneSameInstant(zoneId);</span>
+    }
+
+<span class="nc bnc" id="L63" title="All 2 branches missed.">    public ZonedDateTime convertDateStringWithAEDTZoneToDateTimeWithUTCZone(@NonNull final String date) {</span>
+<span class="nc" id="L64">        final ZonedDateTime sydneyDateTime = convertStringToZoneDateTime(date, &quot;Australia/Sydney&quot;);</span>
+
+<span class="nc" id="L66">        return convertZoneDateTimeToAnotherZone(sydneyDateTime, &quot;UTC&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
